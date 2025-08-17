@@ -69,13 +69,411 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-100 font-sans flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <>
+      <style jsx>{`
+        @keyframes bounce {
+          0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+          40%, 43% { transform: translateY(-10px); }
+          70% { transform: translateY(-5px); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+
+        @keyframes ping {
+          75%, 100% {
+            transform: scale(2);
+            opacity: 0;
+          }
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+
+        .container {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #e0e7ff 100%);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .bg-element {
+          position: absolute;
+          border-radius: 50%;
+          background: linear-gradient(45deg, rgba(244, 114, 182, 0.2), rgba(168, 85, 247, 0.2));
+          animation: float 4s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        .main-wrapper {
+          width: 100%;
+          max-width: 28rem;
+          position: relative;
+          z-index: 10;
+        }
+
+        .main-card {
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(20px);
+          border-radius: 1.5rem;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.5);
+          padding: 2rem;
+          text-align: center;
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-card:hover {
+          transform: translateY(-5px) scale(1.02);
+          box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+          position: relative;
+          margin-bottom: 1.5rem;
+        }
+
+        .floating-heart-1 {
+          position: absolute;
+          top: -0.5rem;
+          right: -0.5rem;
+          color: #f472b6;
+          animation: bounce 2s infinite;
+        }
+
+        .floating-heart-2 {
+          position: absolute;
+          top: -0.25rem;
+          left: -0.75rem;
+          color: #a855f7;
+          animation: bounce 2s infinite 0.5s;
+        }
+
+        .title {
+          font-size: 2.25rem;
+          font-weight: 700;
+          background: linear-gradient(45deg, #7c3aed, #ec4899);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 0.5rem;
+          animation: pulse 3s infinite;
+        }
+
+        .ceremony-info {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          color: #7c2d12;
+          font-size: 1.125rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+        }
+
+        .date-time {
+          color: #dc2626;
+          font-weight: 700;
+          font-size: 1.25rem;
+          margin-top: 0.5rem;
+          animation: bounce 3s infinite;
+        }
+
+        .welcome-section {
+          margin-bottom: 2rem;
+          padding: 1rem;
+          background: linear-gradient(45deg, #f3e8ff, #fdf2f8);
+          border-radius: 1rem;
+          border: 1px solid #e879f9;
+          line-height: 1.6;
+          color: #374151;
+        }
+
+        .upload-area {
+          position: relative;
+          margin-bottom: 1.5rem;
+          padding: 2rem;
+          border: 2px dashed #a855f7;
+          border-radius: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          background: rgba(255, 255, 255, 0.5);
+        }
+
+        .upload-area:hover {
+          border-color: #7c3aed;
+          background: rgba(243, 232, 255, 0.5);
+          transform: translateY(-2px);
+        }
+
+        .upload-area.drag-over {
+          border-color: #7c3aed;
+          background: rgba(243, 232, 255, 0.8);
+          transform: scale(1.02);
+        }
+
+        .upload-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .upload-icon-wrapper {
+          position: relative;
+        }
+
+        .upload-icon {
+          width: 3rem;
+          height: 3rem;
+          color: #a855f7;
+          transition: all 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+          transform: scale(1.1);
+          color: #7c3aed;
+        }
+
+        .ping-effect {
+          position: absolute;
+          inset: -4px;
+          background: #a855f7;
+          border-radius: 50%;
+          opacity: 0.2;
+          animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .upload-text {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #7c3aed;
+          margin-bottom: 0.25rem;
+        }
+
+        .upload-subtext {
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+
+        .file-list {
+          margin-bottom: 1.5rem;
+          max-height: 10rem;
+          overflow-y: auto;
+        }
+
+        .file-list-title {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #7c3aed;
+          margin-bottom: 0.75rem;
+        }
+
+        .file-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: rgba(243, 232, 255, 0.5);
+          border-radius: 0.75rem;
+          padding: 0.75rem;
+          margin-bottom: 0.5rem;
+          transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+          background: rgba(243, 232, 255, 0.8);
+        }
+
+        .file-info {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .file-name {
+          font-size: 0.875rem;
+          color: #374151;
+          max-width: 12rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .remove-btn {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          padding: 0.25rem;
+          border-radius: 50%;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .file-item:hover .remove-btn {
+          opacity: 1;
+        }
+
+        .remove-btn:hover {
+          background: rgba(239, 68, 68, 0.1);
+        }
+
+        .upload-button {
+          width: 100%;
+          padding: 1rem 1.5rem;
+          border-radius: 1rem;
+          font-weight: 700;
+          font-size: 1.125rem;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .upload-button:enabled {
+          background: linear-gradient(45deg, #7c3aed, #ec4899);
+          color: white;
+          box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+        }
+
+        .upload-button:enabled:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 15px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+
+        .upload-button:disabled {
+          background: #e5e7eb;
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+
+        .spinner {
+          width: 1.25rem;
+          height: 1.25rem;
+          border: 2px solid white;
+          border-top: 2px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .status-message {
+          margin-top: 1rem;
+          padding: 0.75rem;
+          border-radius: 0.75rem;
+          transition: all 0.5s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          font-weight: 500;
+        }
+
+        .status-error {
+          background: rgba(254, 242, 242, 0.8);
+          color: #b91c1c;
+          border: 1px solid #fecaca;
+        }
+
+        .status-success {
+          background: rgba(240, 253, 244, 0.8);
+          color: #166534;
+          border: 1px solid #bbf7d0;
+        }
+
+        .status-info {
+          background: rgba(239, 246, 255, 0.8);
+          color: #1d4ed8;
+          border: 1px solid #bfdbfe;
+        }
+
+        .uploaded-section {
+          margin-top: 1.5rem;
+          padding: 1rem;
+          background: linear-gradient(45deg, rgba(240, 253, 244, 0.8), rgba(236, 253, 245, 0.8));
+          border-radius: 1rem;
+          border: 1px solid #bbf7d0;
+        }
+
+        .uploaded-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+          font-weight: 700;
+          color: #166534;
+        }
+
+        .uploaded-list {
+          max-height: 8rem;
+          overflow-y: auto;
+        }
+
+        .uploaded-item {
+          font-size: 0.875rem;
+          color: #059669;
+          background: rgba(255, 255, 255, 0.5);
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          margin-bottom: 0.25rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .footer {
+          text-align: center;
+          margin-top: 2rem;
+          padding: 1rem;
+        }
+
+        .footer-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          color: #7c3aed;
+          font-weight: 600;
+          font-size: 1.125rem;
+        }
+
+        .footer-heart {
+          width: 1.25rem;
+          height: 1.25rem;
+          color: #ec4899;
+          animation: pulse 2s infinite;
+        }
+
+        .footer-heart:nth-child(3) {
+          animation-delay: 0.5s;
+        }
+
+        .hidden {
+          display: none;
+        }
+      `}</style>
+
+      <div className="container">
+        {/* Animated background elements */}
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-gradient-to-r from-pink-200/30 to-purple-200/30 animate-pulse"
+            className="bg-element"
             style={{
               width: `${Math.random() * 100 + 50}px`,
               height: `${Math.random() * 100 + 50}px`,
@@ -86,174 +484,162 @@ function App() {
             }}
           />
         ))}
-      </div>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Main card */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/50 p-8 text-center transform transition-all duration-500 hover:scale-105 hover:shadow-3xl">
-          {/* Header with floating hearts */}
-          <div className="relative mb-6">
-            <div className="absolute -top-2 -right-2 text-pink-400 animate-bounce">
-              <Heart className="w-6 h-6 fill-current" />
-            </div>
-            <div className="absolute -top-1 -left-3 text-purple-400 animate-bounce" style={{animationDelay: '0.5s'}}>
-              <Heart className="w-4 h-4 fill-current" />
-            </div>
-            
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 animate-pulse">
-              Preethi & Vijay Sai
-            </h1>
-            
-            <div className="flex items-center justify-center space-x-2 text-purple-700 text-lg font-semibold">
-              <Camera className="w-5 h-5" />
-              <span>Engagement Ceremony</span>
-            </div>
-            
-            <p className="text-pink-600 font-bold text-xl mt-2 animate-bounce">
-              17th August, 11:43 AM
-            </p>
-          </div>
-
-          {/* Welcome message */}
-          <div className="mb-8 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100">
-            <p className="text-gray-700 leading-relaxed">
-              Welcome, dear guests! 🎉<br />
-              <span className="text-purple-600 font-medium">Share your beautiful moments</span> and photos from our special day.<br />
-              <span className="text-pink-600 font-medium">Your memories make this celebration complete!</span> ✨
-            </p>
-          </div>
-
-          {/* File upload area */}
-          <div 
-            className={`relative mb-6 p-8 border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer group ${
-              dragOver 
-                ? 'border-purple-400 bg-purple-50' 
-                : 'border-purple-300 hover:border-purple-400 hover:bg-purple-50/50'
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={e => setFiles(Array.from(e.target.files))}
-            />
-            
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
-                <Upload className={`w-12 h-12 text-purple-400 transition-all duration-300 ${
-                  dragOver ? 'scale-110 text-purple-600' : 'group-hover:scale-110'
-                }`} />
-                <div className="absolute -inset-1 bg-purple-200 rounded-full opacity-20 animate-ping"></div>
+        <div className="main-wrapper">
+          {/* Main card */}
+          <div className="main-card">
+            {/* Header with floating hearts */}
+            <div className="header">
+              <div className="floating-heart-1">
+                <Heart size={24} fill="currentColor" />
+              </div>
+              <div className="floating-heart-2">
+                <Heart size={16} fill="currentColor" />
               </div>
               
-              <div>
-                <p className="text-lg font-semibold text-purple-700 mb-1">
-                  {dragOver ? 'Drop your photos here!' : 'Click or drag photos here'}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Support for multiple images (JPG, PNG, GIF)
-                </p>
+              <h1 className="title">
+                Preethi & Vijay Sai
+              </h1>
+              
+              <div className="ceremony-info">
+                <Camera size={20} />
+                <span>Engagement Ceremony</span>
               </div>
+              
+              <p className="date-time">
+                17th August, 11:43 AM
+              </p>
             </div>
-          </div>
 
-          {/* Selected files */}
-          {files.length > 0 && (
-            <div className="mb-6 space-y-2 max-h-40 overflow-y-auto">
-              <p className="text-sm font-semibold text-purple-700 mb-3">Selected Photos ({files.length})</p>
-              {Array.from(files).map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-purple-50 rounded-xl p-3 group">
-                  <div className="flex items-center space-x-3">
-                    <Image className="w-5 h-5 text-purple-500" />
-                    <span className="text-sm text-gray-700 truncate max-w-48">{file.name}</span>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile(index);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-100 rounded-full"
-                  >
-                    <X className="w-4 h-4 text-red-500" />
-                  </button>
+            {/* Welcome message */}
+            <div className="welcome-section">
+              <p>
+                Welcome, dear guests! 🎉<br />
+                <span style={{color: '#7c3aed', fontWeight: 500}}>Share your beautiful moments</span> and photos from our special day.<br />
+                <span style={{color: '#ec4899', fontWeight: 500}}>Your memories make this celebration complete!</span> ✨
+              </p>
+            </div>
+
+            {/* File upload area */}
+            <div 
+              className={`upload-area ${dragOver ? 'drag-over' : ''}`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={e => setFiles(Array.from(e.target.files))}
+              />
+              
+              <div className="upload-content">
+                <div className="upload-icon-wrapper">
+                  <Upload className="upload-icon" />
+                  <div className="ping-effect"></div>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* Upload button */}
-          <button
-            onClick={handleUpload}
-            disabled={files.length === 0 || isUploading}
-            className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 transform ${
-              files.length === 0 || isUploading
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:scale-105 shadow-lg hover:shadow-xl'
-            }`}
-          >
-            {isUploading ? (
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Uploading...</span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center space-x-2">
-                <Upload className="w-5 h-5" />
-                <span>Upload Photos</span>
-              </div>
-            )}
-          </button>
-
-          {/* Status message */}
-          {status && (
-            <div className={`mt-4 p-3 rounded-xl transition-all duration-500 ${
-              status.includes('Error') 
-                ? 'bg-red-50 text-red-700 border border-red-200' 
-                : status.includes('successfully')
-                ? 'bg-green-50 text-green-700 border border-green-200'
-                : 'bg-blue-50 text-blue-700 border border-blue-200'
-            }`}>
-              <div className="flex items-center justify-center space-x-2">
-                {status.includes('successfully') && <Check className="w-5 h-5" />}
-                <span className="font-medium">{status}</span>
+                
+                <div>
+                  <p className="upload-text">
+                    {dragOver ? 'Drop your photos here!' : 'Click or drag photos here'}
+                  </p>
+                  <p className="upload-subtext">
+                    Support for multiple images (JPG, PNG, GIF)
+                  </p>
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Uploaded files */}
-          {uploaded.length > 0 && (
-            <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
-              <div className="flex items-center justify-center space-x-2 mb-3">
-                <Check className="w-5 h-5 text-green-600" />
-                <span className="font-bold text-green-700">Successfully Uploaded ({uploaded.length})</span>
-              </div>
-              <div className="max-h-32 overflow-y-auto space-y-1">
-                {uploaded.map((name, idx) => (
-                  <div key={idx} className="text-sm text-green-600 bg-white/50 rounded-lg p-2 truncate">
-                    ✓ {name}
+            {/* Selected files */}
+            {files.length > 0 && (
+              <div className="file-list">
+                <p className="file-list-title">Selected Photos ({files.length})</p>
+                {Array.from(files).map((file, index) => (
+                  <div key={index} className="file-item">
+                    <div className="file-info">
+                      <Image size={20} color="#7c3aed" />
+                      <span className="file-name">{file.name}</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                      }}
+                      className="remove-btn"
+                    >
+                      <X size={16} color="#ef4444" />
+                    </button>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Footer */}
-        <div className="text-center mt-8 p-4">
-          <div className="flex items-center justify-center space-x-2 text-purple-700 font-semibold text-lg">
-            <Heart className="w-5 h-5 fill-current text-pink-500 animate-pulse" />
-            <span>With love, Preethi & Vijay Sai</span>
-            <Heart className="w-5 h-5 fill-current text-pink-500 animate-pulse" style={{animationDelay: '0.5s'}} />
+            {/* Upload button */}
+            <button
+              onClick={handleUpload}
+              disabled={files.length === 0 || isUploading}
+              className="upload-button"
+            >
+              {isUploading ? (
+                <>
+                  <div className="spinner"></div>
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Upload size={20} />
+                  <span>Upload Photos</span>
+                </>
+              )}
+            </button>
+
+            {/* Status message */}
+            {status && (
+              <div className={`status-message ${
+                status.includes('Error') 
+                  ? 'status-error' 
+                  : status.includes('successfully')
+                  ? 'status-success'
+                  : 'status-info'
+              }`}>
+                {status.includes('successfully') && <Check size={20} />}
+                <span>{status}</span>
+              </div>
+            )}
+
+            {/* Uploaded files */}
+            {uploaded.length > 0 && (
+              <div className="uploaded-section">
+                <div className="uploaded-header">
+                  <Check size={20} />
+                  <span>Successfully Uploaded ({uploaded.length})</span>
+                </div>
+                <div className="uploaded-list">
+                  {uploaded.map((name, idx) => (
+                    <div key={idx} className="uploaded-item">
+                      ✓ {name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="footer">
+            <div className="footer-content">
+              <Heart className="footer-heart" fill="currentColor" />
+              <span>With love, Preethi & Vijay Sai</span>
+              <Heart className="footer-heart" fill="currentColor" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
